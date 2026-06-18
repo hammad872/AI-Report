@@ -2,7 +2,7 @@ import axios from 'axios'
 import html2pdf from 'html2pdf.js'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api',
+  baseURL: import.meta.env.VITE_API_URL || 'https://ai-report-dq9t.onrender.com',
   timeout: 90000,
 })
 
