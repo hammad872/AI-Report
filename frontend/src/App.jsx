@@ -39,7 +39,7 @@ export default function App() {
             <UploadPage onReportGenerated={() => setActivePage('report')} />
           )}
           {activePage === 'report' && <ReportPage />}
-          {activePage === 'past'   && <PastReports />}
+          {activePage === 'past' && <PastReports onNavigate={setActivePage} />}
           {activePage === 'admin'  && <AdminPage />}
         </main>
       </div>

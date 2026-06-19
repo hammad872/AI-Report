@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
-import { getAllReports, deleteReport, downloadReportPDF } from '../services/api'
+import { getAllReports, getReport, deleteReport, downloadReportPDF } from '../services/api'
 import toast from 'react-hot-toast'
+import { useReportStore } from '../store/reportStore'
 
-export default function PastReports() {
+
+export default function PastReports({ onNavigate }) {
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
+  const setReport = useReportStore(s => s.setReport)
 
   useEffect(() => {
     loadReports()
@@ -40,11 +43,15 @@ export default function PastReports() {
     }
   }
 
-  const handleView = (id) => {
-    // Navigate to report viewer
-    window.location.href = `/report/${id}`
+  const handleView = async (id) => {
+    try {
+      const data = await getReport(id)
+      setReport(data.report)
+      onNavigate('report')
+    } catch (err) {
+      toast.error('Failed to load report')
+    }
   }
-
   return (
     <div className="max-w-4xl mx-auto space-y-5">
       <div>

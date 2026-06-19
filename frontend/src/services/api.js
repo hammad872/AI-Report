@@ -6,6 +6,9 @@ const api = axios.create({
   timeout: 90000,
 })
 
+
+export const getReport = (reportId) => api.get(`/report/${reportId}`)
+
 api.interceptors.response.use(
   res => res.data,
   err => {
