@@ -1,7 +1,7 @@
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const express = require('express');
-const cors = require('cors');
+const cors = require('cors');// allows *
 require('dotenv').config();
 const db = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -11,7 +11,7 @@ const Exercise = require('./models/Exercise.model');
 const exercises = require('./seed/exercises.json');
 
 const app = express();
-
+app.use(cors()); 
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
