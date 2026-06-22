@@ -13,7 +13,7 @@ const callGroq = async (systemPrompt, userPrompt) => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_tokens: 6000,
+        max_tokens: 5000,
         temperature: 0.3
       },
       {
@@ -39,7 +39,7 @@ const callClaude = async (systemPrompt, userPrompt) => {
       'https://api.anthropic.com/v1/messages',
       {
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
+        max_tokens: 5000,
         system: systemPrompt,
         messages: [
           { role: 'user', content: userPrompt }

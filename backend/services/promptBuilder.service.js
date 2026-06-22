@@ -3,7 +3,7 @@
 // reference report layout exactly (cover • summary • findings • what-this-means •
 // training plan • reassessment targets).
 
-const MAX_PDF_CHARS = 6000  // ~1500 tokens per PDF; tune as needed
+const MAX_PDF_CHARS = 5000  // ~1500 tokens per PDF; tune as needed
 
 const trim = (text = '') =>
   text.length > MAX_PDF_CHARS
