@@ -3,6 +3,13 @@
 // reference report layout exactly (cover • summary • findings • what-this-means •
 // training plan • reassessment targets).
 
+const MAX_PDF_CHARS = 6000  // ~1500 tokens per PDF; tune as needed
+
+const trim = (text = '') =>
+  text.length > MAX_PDF_CHARS
+    ? text.slice(0, MAX_PDF_CHARS) + '\n...[truncated]'
+    : text
+
 const SYSTEM_PROMPT = `You are a certified sports scientist at PeakPerformance.pk. You analyse VALD assessment data (HumanTrak movement screens and Dynamo isometric strength tests) and write a clear, parent-friendly athlete report. No clinical jargon in the prose.
 
 Return ONLY one valid JSON object. No markdown, no code fences, no text before or after, no comments inside the JSON.
@@ -174,13 +181,13 @@ const buildUserPrompt = (athleteProfile, pdfData, exercises) => {
 
   if (humanTrakPdfs.length > 0) {
     prompt += `--- HUMANTRAK DATA ---\n`;
-    humanTrakPdfs.forEach(pdf => { prompt += pdf.text + '\n'; });
+    humanTrakPdfs.forEach(pdf => { prompt += trim(pdf.text) + '\n'; });
     prompt += `--- END HUMANTRAK DATA ---\n\n`;
   }
 
   if (dynamoPdfs.length > 0) {
     prompt += `--- DYNAMO DATA ---\n`;
-    dynamoPdfs.forEach(pdf => { prompt += pdf.text + '\n'; });
+    dynamoPdfs.forEach(pdf => { prompt += trim(pdf.text) + '\n'; });
     prompt += `--- END DYNAMO DATA ---\n\n`;
   }
 
@@ -188,7 +195,7 @@ const buildUserPrompt = (athleteProfile, pdfData, exercises) => {
   const otherPdfs = pdfData.filter(p => p.type !== 'HumanTrak' && p.type !== 'Dynamo');
   if (otherPdfs.length > 0) {
     prompt += `--- ADDITIONAL DATA ---\n`;
-    otherPdfs.forEach(pdf => { prompt += pdf.text + '\n'; });
+    otherPdfs.forEach(pdf => { prompt += trim(pdf.text) + '\n'; });
     prompt += `--- END ADDITIONAL DATA ---\n\n`;
   }
 

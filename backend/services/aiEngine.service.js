@@ -13,7 +13,7 @@ const callGroq = async (systemPrompt, userPrompt) => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        max_tokens: 8000,
+        max_tokens: 6000,
         temperature: 0.3
       },
       {
