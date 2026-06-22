@@ -301,5 +301,6 @@ module.exports = {
   exportReportPdf,
   regenerateReport,
   getAllReports,
-  deleteReportById
+  deleteReportById,
+  extractProfile   // ← this line must be here
 };
