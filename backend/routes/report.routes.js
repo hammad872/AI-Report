@@ -13,6 +13,9 @@ router.get('/', reportController.getAllReports);
 // POST generate report - accepts multiple files + athlete profile
 router.post('/generate', upload.array('files', 10), reportController.generateReport);
 
+// POST extract athlete profile from PDFs (autofill)
+router.post('/extract', upload.array('files', 10), reportController.extractProfile);
+
 // POST regenerate existing report
 router.post('/:id/regenerate', reportController.regenerateReport);
 

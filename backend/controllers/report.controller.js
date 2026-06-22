@@ -4,6 +4,7 @@ const pdfExtractService = require('../services/pdfExtract.service');
 const promptBuilder = require('../services/promptBuilder.service');
 const aiEngine = require('../services/aiEngine.service');
 const reportParser = require('../services/reportParser.service');
+const profileParser = require('../services/profileParser.service');
 
 
 const generateReport = async (req, res, next) => {
@@ -262,6 +263,34 @@ const deleteReportById = async (req, res, next) => {
       message: 'Report deleted successfully'
     });
   } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/report/extract - Extract athlete fields from PDFs (regex, no AI)
+ */
+const extractProfile = async (req, res, next) => {
+  let uploadedFiles = [];
+  try {
+    if (!req.files || req.files.length === 0) {
+      const err = new Error('No files uploaded');
+      err.statusCode = 400;
+      throw err;
+    }
+    uploadedFiles = req.files;
+    const pdfData = await pdfExtractService.processPdfs(uploadedFiles);
+    const combinedText = pdfData.map(p => p.text).join('\n');
+
+    // Read this in Render logs to tune the regex to your real PDFs:
+    console.log('--- AUTOFILL TEXT (first 1200 chars) ---');
+    console.log(combinedText.slice(0, 1200));
+
+    const profile = profileParser.parseProfileFromText(combinedText);
+    pdfExtractService.cleanupTempFiles(uploadedFiles);
+    res.json({ profile });
+  } catch (error) {
+    if (uploadedFiles.length > 0) pdfExtractService.cleanupTempFiles(uploadedFiles);
     next(error);
   }
 };

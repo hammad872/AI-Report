@@ -5,6 +5,7 @@ import { generateReport } from '../services/api'
 import { useReportStore } from '../store/reportStore'
 import { useParamStore } from '../store/paramStore'
 import { sanitizeInput } from '../utils/sanitize'
+import { generateReport, extractProfile } from '../services/api'
 
 const SPORTS = [
   'Cricket', 'Football', 'Basketball', 'Athletics',
@@ -44,6 +45,7 @@ export default function UploadPage({ onReportGenerated }) {
       return
     }
     setFiles(prev => [...prev, ...valid].slice(0, 3))
+    autofillFromPdf(valid.filter(f => f.type === 'application/pdf'))
     setStep(2)
   }, [])
 
@@ -72,6 +74,27 @@ export default function UploadPage({ onReportGenerated }) {
       }
     }
     return true
+  }
+
+  const autofillFromPdf = async (pdfFiles) => {
+    if (pdfFiles.length === 0) return
+    try {
+      const { profile } = await extractProfile(pdfFiles)
+      setForm(prev => {
+        const next = { ...prev }
+        if (profile.name && !prev.name) next.name = profile.name
+        if (profile.age && !prev.age)   next.age  = profile.age
+        if (profile.sport) {
+          const match = SPORTS.find(s => s.toLowerCase() === profile.sport.toLowerCase())
+          if (match) next.sport = match
+        }
+        return next
+      })
+      const filled = [profile.name && 'name', profile.age && 'age', profile.sport && 'sport'].filter(Boolean)
+      if (filled.length) toast.success(`Autofilled ${filled.join(', ')} from PDF`)
+    } catch (err) {
+      console.warn('Autofill failed:', err.message)  // best-effort, stays silent to the user
+    }
   }
 
   const handleGenerate = async () => {
