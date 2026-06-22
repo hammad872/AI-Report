@@ -28,23 +28,34 @@ const firstMatch = (text, patterns) => {
     const t = Date.parse(s) // handles "12 March 2009"
     return isNaN(t) ? null : new Date(t)
   }
+
+  const cleanName = (raw) => {
+    if (!raw) return ''
+    // PDF text often glues "Last" onto the surname before "Last test:"
+    return raw.replace(/([a-z])Last$/i, '$1').trim()
+  }
+
+  const parseName = (text) => {
+    // 1) "Patient:" / "Athlete:" label (appears on VALD detail pages)
+    let name = firstMatch(text, [
+      /\b(?:[Pp]atient|[Aa]thlete|[Cc]lient|[Pp]layer|[Nn]ame)\s*[:\-]\s*([A-Z][a-zA-Z.'-]+(?:\s+[A-Z][a-zA-Z.'-]+){0,4})/,
+    ])
+    if (name) return cleanName(name)
+
+    // 2) Capitalised name before "DOB:" — strip "Last test: …" which often follows the name
+    let header = (text.split(/\bDOB\s*[:\-]/i)[0] || '').trim()
+    header = header.replace(/\s*Last\s+test\s*[:\-][\s\S]*$/i, '').trim()
+    header = header.replace(/([a-z])Last(?=\s*test)/i, '$1').trim()
+
+    const m = header.match(/([A-Z][a-zA-Z.'-]+(?:\s+[A-Z][a-zA-Z.'-]+){0,4})\s*$/)
+    if (m) name = m[1].trim()
+    return cleanName(name)
+  }
   
   const parseProfileFromText = (text = '') => {
     const t = text.replace(/\r/g, ' ')
-  
-    // ── Name ──
-    // 1) "Patient:" / "Athlete:" label (appears on VALD detail pages)
-    // 2) else the capitalised name sitting right before "DOB:"
-    // (no /i flag so [A-Z] actually enforces capitalised words)
-    let name = firstMatch(t, [
-      /\b(?:[Pp]atient|[Aa]thlete|[Cc]lient|[Pp]layer|[Nn]ame)\s*[:\-]\s*([A-Z][a-zA-Z.'-]+(?:\s+[A-Z][a-zA-Z.'-]+){0,2})/,
-    ])
-    if (!name) {
-      const beforeDob = (t.split(/DOB\s*[:\-]/i)[0] || '').trim()
-      const m = beforeDob.match(/([A-Z][a-zA-Z.'-]+(?:\s+[A-Z][a-zA-Z.'-]+){0,2})\s*$/)
-      if (m) name = m[1].trim()
-    }
-  
+
+    const name = parseName(t)
     // ── DOB ──  "DOB: 12 March 2009" or "DOB: 12/03/2009"
     const dob = firstMatch(t, [
       /\b(?:date of birth|d\.?o\.?b\.?)\s*[:\-]\s*(\d{1,2}\s+[A-Za-z]+\s+\d{2,4})/i,

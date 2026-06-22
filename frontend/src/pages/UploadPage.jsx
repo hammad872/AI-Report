@@ -19,6 +19,27 @@ const STEPS = [
   { num: 3, label: 'Generate' },
 ]
 
+function mergeProfileIntoForm(prev, profile) {
+  const applied = []
+  const next = { ...prev }
+  if (profile.name?.trim() && !prev.name?.trim()) {
+    next.name = profile.name.trim()
+    applied.push('name')
+  }
+  if (profile.age && !prev.age) {
+    next.age = String(profile.age)
+    applied.push('age')
+  }
+  if (profile.sport?.trim()) {
+    const match = SPORTS.find(s => s.toLowerCase() === profile.sport.trim().toLowerCase())
+    if (match && match !== prev.sport) {
+      next.sport = match
+      applied.push('sport')
+    }
+  }
+  return { next, applied }
+}
+
 export default function UploadPage({ onReportGenerated }) {
   const [files, setFiles]       = useState([])
   const [loading, setLoading]   = useState(false)
@@ -78,22 +99,26 @@ export default function UploadPage({ onReportGenerated }) {
 
   const autofillFromPdf = async (pdfFiles) => {
     if (pdfFiles.length === 0) return
+    const toastId = toast.loading('Reading athlete details from PDF…')
     try {
       const { profile } = await extractProfile(pdfFiles)
+      let mergeResult = { applied: [] }
       setForm(prev => {
-        const next = { ...prev }
-        if (profile.name && !prev.name) next.name = profile.name
-        if (profile.age && !prev.age)   next.age  = profile.age
-        if (profile.sport) {
-          const match = SPORTS.find(s => s.toLowerCase() === profile.sport.toLowerCase())
-          if (match) next.sport = match
-        }
-        return next
+        mergeResult = mergeProfileIntoForm(prev, profile)
+        return mergeResult.next
       })
-      const filled = [profile.name && 'name', profile.age && 'age', profile.sport && 'sport'].filter(Boolean)
-      if (filled.length) toast.success(`Autofilled ${filled.join(', ')} from PDF`)
+
+      const hasExtracted = !!(profile.name?.trim() || profile.age || profile.sport?.trim())
+      if (mergeResult.applied.length) {
+        toast.success(`Autofilled ${mergeResult.applied.join(', ')} from PDF`, { id: toastId })
+      } else if (!hasExtracted) {
+        toast('No athlete details found in PDF — please fill in manually.', { id: toastId, icon: 'ℹ️' })
+      } else {
+        toast.dismiss(toastId)
+      }
     } catch (err) {
-      console.warn('Autofill failed:', err.message)  // best-effort, stays silent to the user
+      console.warn('Autofill failed:', err.message)
+      toast.error('Could not read PDF details. Please fill in manually.', { id: toastId })
     }
   }
 
