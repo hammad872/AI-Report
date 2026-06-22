@@ -1,11 +1,11 @@
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import toast from 'react-hot-toast'
-import { generateReport } from '../services/api'
+import { generateReport, extractProfile } from '../services/api'
 import { useReportStore } from '../store/reportStore'
 import { useParamStore } from '../store/paramStore'
 import { sanitizeInput } from '../utils/sanitize'
-import { generateReport, extractProfile } from '../services/api'
+
 
 const SPORTS = [
   'Cricket', 'Football', 'Basketball', 'Athletics',
