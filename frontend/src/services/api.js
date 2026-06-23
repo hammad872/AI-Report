@@ -1,17 +1,33 @@
 import axios from 'axios'
 import html2pdf from 'html2pdf.js'
+import { clearAuthToken, getAuthToken } from '../utils/auth'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://ai-report-dq9t.onrender.com/api',
   timeout: 90000,
 })
 
+api.interceptors.request.use((config) => {
+  const token = getAuthToken()
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
 
 export const getReport = (reportId) => api.get(`/report/${reportId}`)
 
 api.interceptors.response.use(
   res => res.data,
   err => {
+    if (err.response?.status === 401) {
+      clearAuthToken()
+      if (window.location.pathname !== '/') {
+        window.location.href = '/'
+      } else {
+        window.location.reload()
+      }
+    }
     const msg = err.response?.data?.error || err.response?.data?.message || err.message || 'Something went wrong'
     return Promise.reject(new Error(msg))
   }

@@ -5,6 +5,8 @@ import UploadPage from './pages/UploadPage'
 import ReportPage from './pages/ReportPage'
 import AdminPage from './pages/AdminPage'
 import PastReports from './pages/PastReports'
+import LoginPage from './pages/LoginPage'
+import { clearAuthToken, getAuthToken } from './utils/auth'
 
 const PAGE_TITLES = {
   upload: 'New report',
@@ -15,6 +17,21 @@ const PAGE_TITLES = {
 
 export default function App() {
   const [activePage, setActivePage] = useState('upload')
+  const [isAuthenticated, setIsAuthenticated] = useState(Boolean(getAuthToken()))
+
+  const handleLogout = () => {
+    clearAuthToken()
+    setIsAuthenticated(false)
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Toaster position="top-right" toastOptions={{ className: 'text-sm font-medium' }} />
+        <LoginPage onLogin={() => setIsAuthenticated(true)} />
+      </>
+    )
+  }
 
   return (
     <div className="flex h-screen overflow-hidden font-sans">
@@ -29,7 +46,13 @@ export default function App() {
             {PAGE_TITLES[activePage]}
           </h1>
           <div className="flex items-center gap-2">
-            {/* Optional: Quick link to past reports */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="px-3 py-1.5 text-xs font-medium rounded-md border border-gray-200 text-gray-600 hover:bg-gray-100"
+            >
+              Logout
+            </button>
           </div>
         </header>
 
