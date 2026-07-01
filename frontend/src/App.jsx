@@ -6,6 +6,8 @@ import ReportPage from './pages/ReportPage'
 import AdminPage from './pages/AdminPage'
 import PastReports from './pages/PastReports'
 import LoginPage from './pages/LoginPage'
+import ForgotPasswordPage from './pages/ForgotPasswordPage'
+import ResetPasswordPage from './pages/ResetPasswordPage'
 import { clearAuthToken, getAuthToken } from './utils/auth'
 
 const PAGE_TITLES = {
@@ -15,20 +17,37 @@ const PAGE_TITLES = {
   admin:  'Admin panel',
 }
 
+const getResetTokenFromUrl = () => new URLSearchParams(window.location.search).get('token')
+
 export default function App() {
   const [activePage, setActivePage] = useState('upload')
   const [isAuthenticated, setIsAuthenticated] = useState(Boolean(getAuthToken()))
+  const [authView, setAuthView] = useState(() => (getResetTokenFromUrl() ? 'reset' : 'login'))
+  const [resetToken] = useState(() => getResetTokenFromUrl())
 
   const handleLogout = () => {
     clearAuthToken()
     setIsAuthenticated(false)
+    setAuthView('login')
   }
 
   if (!isAuthenticated) {
     return (
       <>
         <Toaster position="top-right" toastOptions={{ className: 'text-sm font-medium' }} />
-        <LoginPage onLogin={() => setIsAuthenticated(true)} />
+        {authView === 'reset' && resetToken ? (
+          <ResetPasswordPage
+            token={resetToken}
+            onBackToLogin={() => setAuthView('login')}
+          />
+        ) : authView === 'forgot' ? (
+          <ForgotPasswordPage onBackToLogin={() => setAuthView('login')} />
+        ) : (
+          <LoginPage
+            onLogin={() => setIsAuthenticated(true)}
+            onForgotPassword={() => setAuthView('forgot')}
+          />
+        )}
       </>
     )
   }

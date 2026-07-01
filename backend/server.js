@@ -11,6 +11,7 @@ const reportRoutes = require('./routes/report.routes');
 const exerciseRoutes = require('./routes/exercise.routes');
 const Exercise = require('./models/Exercise.model');
 const exercises = require('./seed/exercises.json');
+const seedAdminUser = require('./seed/seedAdmin');
 
 const app = express();
 app.use(cors()); 
@@ -39,6 +40,7 @@ const seedExercises = async () => {
 };
 
 setTimeout(seedExercises, 1000);
+setTimeout(seedAdminUser, 1500);
 
 // Health check
 app.get('/api/health', (req, res) => {
