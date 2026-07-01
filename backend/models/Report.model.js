@@ -137,6 +137,17 @@ const reportSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  // ── Source PDF text, kept so "Regenerate" can re-run against real data
+  // instead of just the previous report's finding titles ──
+  sourcePdfData: {
+    type: [
+      {
+        type: { type: String },   // 'HumanTrak' | 'Dynamo' | other
+        text: String
+      }
+    ],
+    default: []
+  },
   createdAt: {
     type: Date,
     default: Date.now

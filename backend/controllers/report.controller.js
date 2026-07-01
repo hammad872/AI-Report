@@ -50,7 +50,7 @@ const generateReport = async (req, res, next) => {
     const aiResponse = await aiEngine.generateReport(systemPrompt, userPrompt);
     console.log('AI response received');
 
-    const reportContent = reportParser.parseReportJson(aiResponse);
+    const reportContent = reportParser.parseReportJson(aiResponse, exercises);
     const validatedReport = reportParser.validateAsymmetry(reportContent);
 
     const report = new Report({
@@ -67,7 +67,8 @@ const generateReport = async (req, res, next) => {
       testDate: athleteProfile.testDate || new Date().toLocaleDateString(),
       practitioner: athleteProfile.practitioner || 'Not specified',
       reportContent: validatedReport,
-      rawAiResponse: aiResponse
+      rawAiResponse: aiResponse,
+      sourcePdfData: pdfData.map(p => ({ type: p.type, text: p.text }))
     });
 
     await report.save();
@@ -187,18 +188,30 @@ const regenerateReport = async (req, res, next) => {
     };
 
     const systemPrompt = promptBuilder.getSystemPrompt();
-    const userPrompt = `Re-analyze and regenerate report for:
+
+    // Reuse the real source PDF data captured at generation time so
+    // regenerate re-analyzes actual VALD data instead of just the
+    // previous report's finding titles.
+    let userPrompt;
+    if (existingReport.sourcePdfData && existingReport.sourcePdfData.length > 0) {
+      userPrompt = promptBuilder.buildUserPrompt(athleteProfile, existingReport.sourcePdfData, exercises);
+    } else {
+      // Legacy report saved before sourcePdfData existed — fall back to
+      // the old thin prompt, but flag it so it's obvious in logs.
+      console.warn(`Report ${id} has no sourcePdfData — regenerating from finding titles only`);
+      userPrompt = `Re-analyze and regenerate report for:
 ${JSON.stringify(athleteProfile)}
 
 Previous findings indicated:
 ${existingReport.reportContent?.findings?.map(f => f.title).join(', ')}
 
 Generate updated assessment based on same athlete profile.`;
+    }
 
     const aiResponse = await aiEngine.generateReport(systemPrompt, userPrompt);
     console.log('Regenerated AI response received');
 
-    const reportContent = reportParser.parseReportJson(aiResponse);
+    const reportContent = reportParser.parseReportJson(aiResponse, exercises);
     const validatedReport = reportParser.validateAsymmetry(reportContent);
 
     existingReport.reportContent = validatedReport;

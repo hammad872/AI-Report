@@ -13,8 +13,9 @@ const callGroq = async (systemPrompt, userPrompt) => {
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
+        response_format: { type: 'json_object' },
         max_tokens: 5000,
-        temperature: 0.3
+        temperature: 0.2
       },
       {
         headers: {

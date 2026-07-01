@@ -100,8 +100,28 @@ export default function UploadPage({ onReportGenerated }) {
   const autofillFromPdf = async (pdfFiles) => {
     if (pdfFiles.length === 0) return
     const toastId = toast.loading('Reading athlete details from PDF…')
+
+    // Extract with one automatic retry — the backend (Render free tier) can be
+    // cold-starting on the first request, which rejects; a warmed retry succeeds.
+    const tryExtract = async () => {
+      try {
+        return await extractProfile(pdfFiles)
+      } catch (err) {
+        const msg = (err?.message || '').toLowerCase()
+        const isColdStart =
+          msg.includes('timeout') || msg.includes('network') ||
+          msg.includes('502') || msg.includes('503') || msg.includes('504')
+        if (isColdStart) {
+          toast.loading('Server waking up — retrying…', { id: toastId })
+          await new Promise(r => setTimeout(r, 3000))
+          return await extractProfile(pdfFiles) // second attempt; throws if still failing
+        }
+        throw err
+      }
+    }
+
     try {
-      const { profile } = await extractProfile(pdfFiles)
+      const { profile } = await tryExtract()
       let mergeResult = { applied: [] }
       setForm(prev => {
         mergeResult = mergeProfileIntoForm(prev, profile)
@@ -117,8 +137,17 @@ export default function UploadPage({ onReportGenerated }) {
         toast.dismiss(toastId)
       }
     } catch (err) {
-      console.warn('Autofill failed:', err.message)
-      toast.error('Could not read PDF details. Please fill in manually.', { id: toastId })
+      // Surface the ACTUAL failure so it's clear whether this is a server/network
+      // issue vs. a genuine parsing problem — instead of a generic message.
+      const raw = err?.message || 'Unknown error'
+      console.error('Autofill failed:', raw)
+      const low = raw.toLowerCase()
+      const friendly =
+        low.includes('timeout') ? 'Server timed out — it may be waking up. Try again in a moment.' :
+        (low.includes('network') || low.includes('502') || low.includes('503') || low.includes('504'))
+          ? 'Cannot reach the server right now. Try again in a moment.' :
+        `Autofill failed: ${raw}. You can fill in manually.`
+      toast.error(friendly, { id: toastId, duration: 6000 })
     }
   }
 
