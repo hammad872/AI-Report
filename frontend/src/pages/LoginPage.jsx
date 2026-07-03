@@ -2,6 +2,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { setAuthToken } from '../utils/auth';
+import PasswordInput from '../components/PasswordInput';
 
 const authApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://ai-report-dq9t.onrender.com/api',
@@ -51,13 +52,11 @@ export default function LoginPage({ onLogin, onForgotPassword }) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               autoComplete="current-password"
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pp-green/30"
+              required
             />
           </div>
 

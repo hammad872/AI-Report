@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import PasswordInput from '../components/PasswordInput';
 
 const authApi = axios.create({
   baseURL: import.meta.env.VITE_API_URL || 'https://ai-report-dq9t.onrender.com/api',
@@ -10,7 +11,8 @@ const authApi = axios.create({
 export default function ResetPasswordPage({ token, onBackToLogin }) {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = us
+  eState(false);
   const [done, setDone] = useState(false);
 
   const handleSubmit = async (event) => {
@@ -59,27 +61,23 @@ export default function ResetPasswordPage({ token, onBackToLogin }) {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">New password</label>
-              <input
-                type="password"
+              <PasswordInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
                 required
                 minLength={6}
-                autoComplete="new-password"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pp-green/30"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Confirm password</label>
-              <input
-                type="password"
+              <PasswordInput
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
                 required
                 minLength={6}
-                autoComplete="new-password"
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pp-green/30"
               />
             </div>
 
