@@ -62,6 +62,39 @@ const callClaude = async (systemPrompt, userPrompt) => {
 };
 
 /**
+ * Calls Gemini API (2.5 Pro)
+ */
+const callGemini = async (systemPrompt, userPrompt) => {
+  try {
+    const model = process.env.GEMINI_MODEL || 'gemini-2.5-pro';
+
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+      {
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+        generationConfig: {
+          temperature: 0.2,
+          responseMimeType: 'application/json',
+          maxOutputTokens: 8000
+        }
+      },
+      {
+        headers: {
+          'x-goog-api-key': process.env.GEMINI_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        timeout: 60000
+      }
+    );
+
+    return response.data.candidates[0].content.parts[0].text;
+  } catch (error) {
+    throw new Error(`Gemini API error: ${error.response?.data?.error?.message || error.message}`);
+  }
+};
+
+/**
  * Routes to correct AI provider based on environment variable
  */
 const generateReport = async (systemPrompt, userPrompt) => {
@@ -73,6 +106,8 @@ const generateReport = async (systemPrompt, userPrompt) => {
     let response;
     if (provider === 'claude') {
       response = await callClaude(systemPrompt, userPrompt);
+    } else if (provider === 'gemini') {
+      response = await callGemini(systemPrompt, userPrompt);
     } else {
       response = await callGroq(systemPrompt, userPrompt);
     }
@@ -86,5 +121,6 @@ const generateReport = async (systemPrompt, userPrompt) => {
 module.exports = {
   generateReport,
   callGroq,
-  callClaude
+  callClaude,
+  callGemini
 };

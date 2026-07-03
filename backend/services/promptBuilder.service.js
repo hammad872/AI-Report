@@ -61,10 +61,10 @@ Return EXACTLY these keys (this is the required shape — values below are illus
   "onCourt": {
     "intro": "One or two sentences stating directly, using the specific numbers from the findings above, how this athlete's movement and performance are affected right now.",
     "sections": [
-      { "title": "Serve & Overhead", "body": "State directly what happens in this part of the game because of the specific numbers found above — not what generally 'can' happen with this type of finding." },
+      { "title": "Serve & Overhead", "body": "State directly what happens in this part of the game because of the specific numbers found above — not what generally 'can' happen with this type of finding. Where the finding carries injury risk, name the injury pathway and the sport action that loads it (see INJURY-RISK RULE below)." },
       { "title": "Groundstrokes", "body": "..." },
       { "title": "Footwork & Court Coverage", "body": "..." },
-      { "title": "The Bigger Picture", "body": "Age-appropriate context: state directly what happens if this specific number is left unaddressed, using the actual measured value, not a generic injury-risk disclaimer." }
+      { "title": "The Bigger Picture", "body": "Balanced, age-appropriate context: say plainly whether this is an early, trainable signal or a genuine current problem, state what happens if the specific measured value is left unaddressed over a realistic timeframe (e.g. a season, 2-3 years of training), and state what improves if it's addressed. Never a bare injury-risk disclaimer with no reasoning attached." }
     ]
   },
 
@@ -138,6 +138,11 @@ GOLD-STANDARD WRITING BENCHMARK — match this exact level of specificity and co
 
   Notice: every sentence names the actual figure, the exact joint/tissue, the exact tennis movement, and a direct outcome. NONE of them could be dropped into a different athlete's report unchanged. THAT is the standard. Write every athlete's report to this bar using THEIR real numbers and THEIR sport.
 
+  injury-risk + balance standard — compare how a MONITOR finding and a PRIORITY finding are written for the same athlete, note the different intensity:
+  MONITOR (ankle, 9% asymmetry): "The right ankle restriction (30° vs 33° left) limits how low Ayla can get on her split step to the right, so the knee and hip pick up the extra work to close the gap — over a season of long rallies that's a low-grade path toward knee or hip overuse strain, not an acute injury risk. It's an early signal that responds well to consistent ankle mobility work, not a current problem."
+  PRIORITY (knee extension, 71% asymmetry): "A 71% gap this large in knee extension strength is not a training-load issue — the left leg is producing less than a third of the force the right leg produces on the same movement. If this holds on retest rather than reflecting an off day, loading drills that push off explosively (serve drive, lunges into the forehand) put nearly all the work through the right leg, and that kind of one-sided load over a training block is a common precursor to patellar tendinopathy on the dominant side. This is why it needs retesting before any leg-loading exercise is added to training."
+  Notice the different confidence and intensity: the ankle finding reads as manageable and routine; the knee finding reads as genuinely needing action first. Both name the mechanism, the sport action, and the specific consequence — neither is a bare disclaimer.
+
 RULES — follow every one:
 - Output JSON only. Double quotes, no trailing commas, no // comments in your output.
 - The numbers and values in the example JSON above (names, ages, percentages, areasToAddress: 2, testsCompleted: 7, etc.) are illustrative only. Never copy or default to them — compute every value strictly from the athlete profile and VALD data given in the user message.
@@ -160,6 +165,17 @@ RULES — follow every one:
   • BAD (generic — could be any athlete): "This asymmetry may affect the athlete's movement patterns and could potentially impact on-court performance."
   • GOOD (this athlete's numbers → mechanism → tennis action → consequence): "The 11% right-side rotation deficit (85° vs 95° left) means the thoracic spine can't uncoil fully through serve contact, so Ayla makes up the racket speed by overloading the shoulder and lower back — that is where overuse injuries start over a full training block."
   • Match this standard of specificity in every section. Name the number every time; do not summarise it away as "the finding" or "this asymmetry" without the figure attached.
+
+- INJURY-RISK RULE (applies to onCourt only): when a finding plausibly increases injury risk, say so explicitly using calibrated language ("increases the risk of...", "is where overuse injuries tend to start...") — never state an injury as a certainty ("this will cause an injury"), and never omit it with a vague performance-only statement when risk is actually the bigger issue. Every injury-risk sentence must give the REASON in the same breath: which structure is compensating, and which repeated sport action loads it. "Increases injury risk" with no named structure and no named action is a banned sentence — it fails the same test as a generic performance sentence.
+  • Pattern: "[SPECIFIC SPORT ACTION] repeatedly loads [STRUCTURE], which is already compensating for [EXACT NUMBER/FINDING] — that repeated load is what leads to [SPECIFIC INJURY TYPE, e.g. 'shoulder impingement', 'patellar tendinopathy', 'lower back strain'] over a season of training and matches, not a single moment."
+  • Only name a specific injury type (e.g. "overuse shoulder injury," "ACL strain," "stress fracture") when the mechanism you described actually supports that injury — do not default to a generic "injury" if a more specific, mechanistically justified term is available and appropriate for a youth athlete.
+  • This applies equally to STRENGTH/FORCE imbalances (Dynamo asymmetry findings), not just mobility/range restrictions — do not let strength-imbalance sections fall back on vaguer language just because there's no joint angle to cite. Worked example: "A 71% knee extension asymmetry means the weaker leg produces far less push-off force into an explosive forehand or split step; the stronger leg and hip take over that load to generate the same power, and it's that repeated one-sided compensation — not the asymmetry itself — that leads to patellar tendinopathy or hip flexor strain on the dominant side over a training block." Note the same four parts are present: exact number, which leg/structure compensates, the specific stroke/movement loading it, and a named injury type — an imbalance finding gets the identical treatment as a mobility-restriction finding, never a softer one.
+
+- BALANCE RULE (applies to onCourt, especially "The Bigger Picture"): calibrate tone to the actual severity of the finding — most youth movement-screen findings are early, trainable signals, not current injuries. For each finding, be explicit about which of these it is:
+  • MONITOR-level findings (asymmetry roughly 8-15%, mobility restrictions): frame as "early signal, fully trainable now, not a current problem" — state the risk AND state that consistent training resolves it.
+  • PRIORITY/NEEDS_WORK findings (asymmetry >20%, or flagged for retest/referral): frame with more urgency but still avoid alarmism — name the specific action needed (retest, physio referral) rather than open-ended worry.
+  • Never let every finding read with the same intensity — a 9% ankle asymmetry and a 71% strength asymmetry must not sound equally serious. If the language for a MONITOR finding and a PRIORITY finding is interchangeable, the calibration has failed.
+  • Balanced does not mean vague — it means the confidence of the mechanism stays high (you are certain about the biomechanics) while the confidence of the outcome is honestly scaled to how likely/severe it actually is at this athlete's age and training volume.
 - onCourt.sections: 3–4 sections, each titled and written for the athlete's ACTUAL sport (do not hard-code tennis).
 - trainingPlan: ALWAYS use intro + priorities + weeklySchedule + progression. Do NOT use phase1/phase2.
   • Priority 1 is normally a short safety/retest item expressed as "bullets" (array of strings), no exercise table.
