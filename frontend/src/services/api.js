@@ -420,13 +420,6 @@ export const downloadReportPDF = async reportId => {
       ${sectionHeading(2, 'Findings')}
       ${findingsHtml}
 
-    `)}
-  </div>
-
-  <!-- ══ What This Means on Court ══ -->
-
-  <div class="new-page">
-    ${page(`
       ${sectionHeading(3, 'What This Means on Court')}
       ${onCourtHtml}
       ${sectionHeading(4, 'Training Plan')}
@@ -437,8 +430,9 @@ export const downloadReportPDF = async reportId => {
       </p>
       ${targetsHtml}
       ${footer}
+
     `)}
-</div>
+  </div>
 
 
 
