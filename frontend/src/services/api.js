@@ -402,9 +402,6 @@ export const downloadReportPDF = async reportId => {
     <div style="font-family:${PP};font-size:9pt;color:#444;margin-bottom:4px;">
       ${coverMeta1}
     </div>
-    <div style="font-family:${PP};font-size:9pt;color:#444;margin-bottom:4px;">
-      ${coverMeta2}
-    </div>
     <div style="font-family:${PP};font-size:9pt;color:#e07b39;margin-top:22px;">
       peakperformance.pk
     </div>
@@ -422,7 +419,7 @@ export const downloadReportPDF = async reportId => {
 
       ${sectionHeading(3, 'What This Means on Court')}
       ${onCourtHtml}
-      ${sectionHeading(4, 'Training Plan')}
+      ${sectionHeading(4, 'Training Pl an')}
       ${planHtml || `<p style="font-family:${PP};font-size:8.5pt;color:#888;">No training plan data available.</p>`}
       ${sectionHeading(5, 'Reassessment Targets')}
       <p style="font-family:${PP};font-size:8.5pt;color:#555;margin-bottom:14px;">
