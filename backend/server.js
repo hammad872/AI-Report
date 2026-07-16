@@ -1,7 +1,6 @@
 const dns = require('dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 const express = require('express');
-const cors = require('cors');// allows *
 require('dotenv').config();
 const db = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
@@ -14,30 +13,31 @@ const exercises = require('./seed/exercises.json');
 const seedAdminUser = require('./seed/seedAdmin');
 
 const app = express();
+const cors = require('cors');
+
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://ai-report-flax.vercel.app/', // add your deployed frontend URL too
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // needed if you're sending cookies/auth headers
+}));
 
 // Middleware
 // FRONTEND_URL can be a single origin or a comma-separated list
 // (e.g. "https://ai-report-flax.vercel.app,http://localhost:3000").
 // Trailing slashes are stripped because the browser's Origin header
 // never includes one — a mismatch here is a silent CORS failure.
-const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000')
-  .split(',')
-  .map(origin => origin.trim().replace(/\/$/, ''));
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // allow tools with no origin (curl, server-to-server, health checks)
-    if (!origin) return callback(null, true);
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    console.warn(`CORS blocked request from origin: ${origin}`);
-    return callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true
-}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
