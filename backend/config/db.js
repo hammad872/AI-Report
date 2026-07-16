@@ -10,7 +10,10 @@ const db = async () => {
     return conn;
   } catch (error) {
     console.error('MongoDB connection error:', error.message);
-    process.exit(1);
+    // Don't kill the process — keep the server up so requests get a real
+    // HTTP error response instead of a dead connection (which browsers
+    // misreport as a CORS failure). Retry after a delay instead.
+    setTimeout(db, 5000);
   }
 };
 
