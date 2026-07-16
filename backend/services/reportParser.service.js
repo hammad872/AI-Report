@@ -35,6 +35,7 @@ const parseReportJson = (aiResponse) => {
 
     // ── Summary ──
     reportData.overallSummary = reportData.overallSummary || 'Assessment completed. See detailed findings below.';
+    if (!Array.isArray(reportData.areaSummary)) reportData.areaSummary = [];
     reportData.areasToAddress = reportData.areasToAddress || 0;
     reportData.testsCompleted = reportData.testsCompleted || 0;
     reportData.jumpHeight = reportData.jumpHeight || '';
@@ -54,10 +55,11 @@ const parseReportJson = (aiResponse) => {
 
     // ── Section 3: What This Means on Court ──
     if (!reportData.onCourt || typeof reportData.onCourt !== 'object') {
-      reportData.onCourt = { intro: '', sections: [] };
+      reportData.onCourt = { intro: '', sections: [], perFinding: [] };
     }
     reportData.onCourt.intro = reportData.onCourt.intro || '';
     if (!Array.isArray(reportData.onCourt.sections)) reportData.onCourt.sections = [];
+    if (!Array.isArray(reportData.onCourt.perFinding)) reportData.onCourt.perFinding = [];
 
     // ── Section 4: Training Plan ──
     if (!reportData.trainingPlan || typeof reportData.trainingPlan !== 'object') {

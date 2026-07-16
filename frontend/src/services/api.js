@@ -178,7 +178,16 @@ export const downloadReportPDF = async reportId => {
         <div style="margin-bottom:6px;page-break-inside:avoid;">
           ${subHeading(s.title)}
           ${paras(s.body)}
-        </div>`).join('')}`
+        </div>`).join('')}
+      ${(onCourt.perFinding || []).length > 0 ? `
+        <div style="margin-top:10px;page-break-inside:avoid;">
+          ${subHeading('On-Court Examples — By Finding')}
+          ${(onCourt.perFinding || []).map(pf => `
+            <div style="margin-bottom:12px;page-break-inside:avoid;">
+              <div style="font-family:${PP};font-size:8.5pt;font-weight:600;color:#111;margin-bottom:3px;">${pf.finding}</div>
+              <p style="font-family:${PP};font-size:8.5pt;color:#333;line-height:1.7;margin:0;">${pf.example}</p>
+            </div>`).join('')}
+        </div>` : ''}`
 
     // ══ Section 4 — Training Plan ══
     const tp = report.reportContent?.trainingPlan || {}
@@ -412,6 +421,10 @@ export const downloadReportPDF = async reportId => {
     ${page(`
       ${sectionHeading(1, 'Assessment Summary')}
       ${paras(report.reportContent?.overallSummary || '')}
+      ${report.reportContent?.areaSummary?.length > 1 ? `
+        <div style="border:1px solid #e5e7eb;border-radius:4px;overflow:hidden;margin:14px 0 18px;">
+          ${renderMetricsTable(report.reportContent.areaSummary)}
+        </div>` : ''}
       ${statCardsHtml}
 
       ${sectionHeading(2, 'Findings')}

@@ -53,6 +53,7 @@ const reportSchema = new mongoose.Schema({
   },
   reportContent: {
     overallSummary: String,
+    areaSummary: [[mongoose.Schema.Types.Mixed]],
     areasToAddress: Number,
     testsCompleted: Number,
     jumpHeight: String,
@@ -77,6 +78,12 @@ const reportSchema = new mongoose.Schema({
         {
           title: String,
           body: String
+        }
+      ],
+      perFinding: [
+        {
+          finding: String,
+          example: String
         }
       ]
     },
