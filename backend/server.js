@@ -15,15 +15,29 @@ const seedAdminUser = require('./seed/seedAdmin');
 const app = express();
 const cors = require('cors');
 
+// FRONTEND_URL can be a single origin or a comma-separated list
+// (e.g. "https://ai-report-flax.vercel.app,http://localhost:3000").
+// Trailing slashes are stripped because the browser's Origin header
+// never includes one — a mismatch here is a silent CORS failure.
+const stripTrailingSlash = (url) => url.trim().replace(/\/+$/, '');
+
+const envOrigins = (process.env.FRONTEND_URL || '')
+  .split(',')
+  .map(stripTrailingSlash)
+  .filter(Boolean);
+
 const allowedOrigins = [
-  'http://localhost:3000',
-  'https://ai-report-flax.vercel.app/', // add your deployed frontend URL too
+  ...new Set([
+    'http://localhost:3000',
+    'https://ai-report-flax.vercel.app',
+    ...envOrigins,
+  ]),
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
     // allow requests with no origin (like mobile apps, curl, Postman)
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(stripTrailingSlash(origin))) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -31,13 +45,6 @@ app.use(cors({
   },
   credentials: true, // needed if you're sending cookies/auth headers
 }));
-
-// Middleware
-// FRONTEND_URL can be a single origin or a comma-separated list
-// (e.g. "https://ai-report-flax.vercel.app,http://localhost:3000").
-// Trailing slashes are stripped because the browser's Origin header
-// never includes one — a mismatch here is a silent CORS failure.
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
