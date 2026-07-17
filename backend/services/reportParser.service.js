@@ -25,7 +25,6 @@ const parseReportJson = (aiResponse) => {
   try {
     const cleanJson = stripMarkdown(aiResponse);
     const reportData = JSON.parse(cleanJson);
-
     // ── Cover / identity ──
     reportData.athleteName = reportData.athleteName || '';
     reportData.dob = reportData.dob || '';
@@ -105,6 +104,23 @@ const parseReportJson = (aiResponse) => {
 
     return reportData;
   } catch (error) {
+    // JSON.parse errors include a character position (e.g. "position 13411") —
+    // pull it out and log the surrounding text so a future failure is
+    // immediately readable instead of requiring reproduction.
+    const posMatch = error.message.match(/position (\d+)/);
+    if (posMatch) {
+      const pos = Number(posMatch[1]);
+      const cleanJson = stripMarkdown(aiResponse);
+      const start = Math.max(0, pos - 150);
+      const end = Math.min(cleanJson.length, pos + 150);
+      console.error('--- JSON PARSE FAILURE CONTEXT ---');
+      console.error(`Response length: ${cleanJson.length} chars`);
+      console.error(`Failure near char ${pos}:`);
+      console.error(cleanJson.slice(start, end));
+      console.error(`Last 200 chars of response (checks for truncation):`);
+      console.error(cleanJson.slice(-200));
+      console.error('--- END CONTEXT ---');
+    }
     throw new Error(`Report parsing failed: ${error.message}`);
   }
 };

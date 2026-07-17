@@ -4,7 +4,7 @@ import axios from 'axios';
 import PasswordInput from '../components/PasswordInput';
 
 const authApi = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://ai-report-dq9t.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 30000,
 });
 

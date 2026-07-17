@@ -3,7 +3,7 @@ import html2pdf from 'html2pdf.js'
 import { clearAuthToken, getAuthToken } from '../utils/auth'
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://ai-report-dq9t.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL,
   timeout: 90000,
 })
 
