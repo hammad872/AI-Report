@@ -69,16 +69,10 @@ Return EXACTLY these keys (this is the required shape — values below are illus
   "onCourt": {
     "intro": "One or two sentences stating directly, using the specific numbers from the findings above, how this athlete's movement and performance are affected right now.",
     "sections": [
-      { "title": "Serve & Overhead", "body": "State directly what happens in this part of the game because of the specific numbers found above — not what generally 'can' happen with this type of finding. Where the finding carries injury risk, name the injury pathway and the sport action that loads it (see INJURY-RISK RULE below)." },
-      { "title": "Groundstrokes", "body": "..." },
-      { "title": "Footwork & Court Coverage", "body": "..." },
-      { "title": "The Bigger Picture", "body": "Balanced, age-appropriate context: say plainly whether this is an early, trainable signal or a genuine current problem, state what happens if the specific measured value is left unaddressed over a realistic timeframe (e.g. a season, 2-3 years of training), and state what improves if it's addressed. Never a bare injury-risk disclaimer with no reasoning attached." }
-    ],
-    "perFinding": [
-      {
-        "finding": "Knee Strength — Isometric (Dynamo)",
-        "example": "One concrete, technical, observable moment in THIS athlete's sport tied to THIS exact finding — name the joint/structure clinically, describe the compensation mechanism, and describe the specific sport action where it shows up (e.g. 'On the explosive push-off into a serve, the left vastus medialis and lateralis generate roughly a third less isometric force than the right quadriceps group, so the right hip and lower back rotate earlier to compensate for the shortfall in knee extension torque')."
-      }
+      { "title": "Serve & Overhead", "body": "State directly what happens in this part of the game because of the specific numbers found above — not what generally 'can' happen with this type of finding. Where the finding carries injury risk, name the injury pathway and the sport action that loads it (see INJURY-RISK RULE below).", "example": "One short, concrete, observable moment in THIS athlete's sport tied to a finding from THIS section — name the joint/structure clinically and the specific sport action where it shows up (e.g. 'On the explosive push-off into a serve, the left vastus medialis and lateralis generate roughly a third less isometric force than the right quadriceps group, so the right hip and lower back rotate earlier to compensate for the shortfall in knee extension torque')." },
+      { "title": "Groundstrokes", "body": "...", "example": "..." },
+      { "title": "Footwork & Court Coverage", "body": "...", "example": "..." },
+      { "title": "The Bigger Picture", "body": "Balanced, age-appropriate context: say plainly whether this is an early, trainable signal or a genuine current problem, state what happens if the specific measured value is left unaddressed over a realistic timeframe (e.g. a season, 2-3 years of training), and state what improves if it's addressed. Never a bare injury-risk disclaimer with no reasoning attached.", "example": "..." }
     ]
   },
 
@@ -210,13 +204,12 @@ RULES — follow every one:
   • PRIORITY/NEEDS_WORK findings (asymmetry >20%, or flagged for retest/referral): frame with more urgency but still avoid alarmism — name the specific action needed (retest, physio referral) rather than open-ended worry.
   • Never let every finding read with the same intensity — a 9% ankle asymmetry and a 71% strength asymmetry must not sound equally serious. If the language for a MONITOR finding and a PRIORITY finding is interchangeable, the calibration has failed.
   • Balanced does not mean vague — it means the confidence of the mechanism stays high (you are certain about the biomechanics) while the confidence of the outcome is honestly scaled to how likely/severe it actually is at this athlete's age and training volume.
-- onCourt.sections: 3–4 sections, each titled and written for the athlete's ACTUAL sport (do not hard-code tennis).
-- onCourt.perFinding: REQUIRED — one entry for EVERY finding in findings[], no exceptions, including "good"/"excellent" findings (for those, the example is a short positive on-court translation, e.g. "his push-off force is already even side to side when he cuts or accelerates"). Use the finding's exact title as "finding". Each "example" must:
-  • Name the specific joint/muscle/structure clinically (not "the leg" — "the left quadriceps," "the right ankle's dorsiflexion range," etc.)
-  • Describe the actual compensation mechanism the body uses
-  • Anchor it to one concrete, observable moment in the athlete's ACTUAL sport (a specific action — the plant step, the split step, the takeoff, the follow-through — not a vague "when playing")
-  • For monitor/needs_work/priority findings, close with the consequence if untrained, calibrated per the BALANCE RULE below
-  This is a per-finding requirement, distinct from onCourt.sections above (which groups findings by phase of play) — perFinding guarantees no individual finding is left without its own worked example.
+- onCourt.sections: 3–4 sections, each titled and written for the athlete's ACTUAL sport (do not hard-code tennis). Each section REQUIRES its own "example" field — no exceptions, and no separate examples list elsewhere. Each "example" must:
+  • Be SHORT — one to two sentences, not a full paragraph.
+  • Name the specific joint/muscle/structure clinically (not "the leg" — "the left quadriceps," "the right ankle's dorsiflexion range," etc.), tied to a finding actually discussed in that section's "body".
+  • Anchor it to one concrete, observable moment in the athlete's ACTUAL sport (a specific action — the plant step, the split step, the takeoff, the follow-through — not a vague "when playing").
+  • For monitor/needs_work/priority findings, close with the consequence if untrained, calibrated per the BALANCE RULE below.
+  • For "The Bigger Picture" section specifically, the example can be a short positive/forward-looking translation if every finding is good/excellent (e.g. "his push-off force is already even side to side when he cuts or accelerates").
 - AREA SUMMARY TABLE: areaSummary is a quick-glance table for the top of the report, structured exactly like a findings[].metrics table (row 0 = header ["Area","Finding","Status"]). It must include one row for EVERY distinct area/test actually performed in this assessment (not just the flagged ones) — pull the area names from the findings and their metrics tables. "Finding" is the raw result plus a short comparison phrase (e.g. "9° — very restricted", "100% — equal output both legs"), matching the level of detail a clinician would put in a chart at-a-glance. Order rows by clinical priority — priority/needs_work first, then monitor, then good/excellent. Status uses the same allowed status keywords as findings[].metrics.
 - trainingPlan: ALWAYS use intro + priorities + weeklySchedule + progression. Do NOT use phase1/phase2.
   • Priority 1 is normally a short safety/retest item expressed as "bullets" (array of strings), no exercise table.

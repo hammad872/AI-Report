@@ -175,19 +175,11 @@ export const downloadReportPDF = async reportId => {
     const onCourtHtml = `
       ${onCourt.intro ? paras(onCourt.intro) : ''}
       ${(onCourt.sections || []).map(s => `
-        <div style="margin-bottom:6px;page-break-inside:avoid;">
+        <div style="margin-bottom:10px;page-break-inside:avoid;">
           ${subHeading(s.title)}
           ${paras(s.body)}
-        </div>`).join('')}
-      ${(onCourt.perFinding || []).length > 0 ? `
-        <div style="margin-top:10px;page-break-inside:avoid;">
-          ${subHeading('On-Court Examples — By Finding')}
-          ${(onCourt.perFinding || []).map(pf => `
-            <div style="margin-bottom:12px;page-break-inside:avoid;">
-              <div style="font-family:${PP};font-size:8.5pt;font-weight:600;color:#111;margin-bottom:3px;">${pf.finding}</div>
-              <p style="font-family:${PP};font-size:8.5pt;color:#333;line-height:1.7;margin:0;">${pf.example}</p>
-            </div>`).join('')}
-        </div>` : ''}`
+          ${s.example ? `<p style="font-family:${PP};font-size:8.5pt;color:#333;line-height:1.7;margin:4px 0 0;font-style:italic;">${s.example}</p>` : ''}
+        </div>`).join('')}`
 
     // ══ Section 4 — Training Plan ══
     const tp = report.reportContent?.trainingPlan || {}

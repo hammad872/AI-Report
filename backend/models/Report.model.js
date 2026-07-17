@@ -77,12 +77,7 @@ const reportSchema = new mongoose.Schema({
       sections: [
         {
           title: String,
-          body: String
-        }
-      ],
-      perFinding: [
-        {
-          finding: String,
+          body: String,
           example: String
         }
       ]

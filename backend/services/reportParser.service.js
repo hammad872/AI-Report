@@ -54,11 +54,15 @@ const parseReportJson = (aiResponse) => {
 
     // ── Section 3: What This Means on Court ──
     if (!reportData.onCourt || typeof reportData.onCourt !== 'object') {
-      reportData.onCourt = { intro: '', sections: [], perFinding: [] };
+      reportData.onCourt = { intro: '', sections: [] };
     }
     reportData.onCourt.intro = reportData.onCourt.intro || '';
     if (!Array.isArray(reportData.onCourt.sections)) reportData.onCourt.sections = [];
-    if (!Array.isArray(reportData.onCourt.perFinding)) reportData.onCourt.perFinding = [];
+    reportData.onCourt.sections.forEach(s => {
+      s.title = s.title || '';
+      s.body = s.body || '';
+      s.example = s.example || '';
+    });
 
     // ── Section 4: Training Plan ──
     if (!reportData.trainingPlan || typeof reportData.trainingPlan !== 'object') {
