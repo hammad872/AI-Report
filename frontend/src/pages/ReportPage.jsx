@@ -20,7 +20,9 @@ export default function ReportPage() {
     <div className="max-w-4xl mx-auto space-y-5">
       <ReportHeader report={report} />
       <SummaryCards report={report} />
+      <AreaSummary areaSummary={report.reportContent?.areaSummary} />
       <FindingsSection findings={report.reportContent?.findings} />
+      <OnCourtSection onCourt={report.reportContent?.onCourt} />
       <TrainingPlan plan={report.reportContent?.trainingPlan} />
       <ReassessmentTargets targets={report.reportContent?.reassessmentTargets} />
     </div>
@@ -182,51 +184,197 @@ function FindingsSection({ findings = [] }) {
   )
 }
 
-function TrainingPlan({ plan }) {
-  if (!plan) return null
-
-  const phases = [
-    { key: 'phase1', title: 'Phase 1 — Weeks 1–3: Build the foundation', color: 'bg-blue-50 text-blue-800' },
-    { key: 'phase2', title: 'Phase 2 — Weeks 4–6: Load and progress',    color: 'bg-pp-greenLite text-pp-green' },
-  ]
+function AreaSummary({ areaSummary = [] }) {
+  if (!areaSummary.length) return null
+  const [header, ...rows] = areaSummary
 
   return (
     <div className="card">
-      <h3 className="text-sm font-medium text-gray-900 mb-4">🏋️ 6-week exercise plan</h3>
-      <div className="space-y-3">
-        {phases.map(phase => {
-          const exercises = plan[phase.key] || []
-          if (!exercises.length) return null
-          return (
-            <div key={phase.key} className="border border-gray-100 rounded-xl overflow-hidden">
-              <div className={`px-4 py-3 text-sm font-medium ${phase.color}`}>
-                {phase.title}
+      <h3 className="text-sm font-medium text-gray-900 mb-4 flex items-center gap-2">
+        📊 Area summary
+      </h3>
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs">
+          <thead>
+            <tr className="bg-gray-800 text-white">
+              {header.map((h, i) => (
+                <th key={i} className="px-3 py-2 text-left font-medium">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row, ri) => (
+              <tr key={ri} className={ri % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                {row.map((cell, ci) => (
+                  <td key={ci} className="px-3 py-2 text-gray-700">{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}
+
+function OnCourtSection({ onCourt }) {
+  const sections = onCourt?.sections || []
+  if (!onCourt?.intro && !sections.length) return null
+
+  return (
+    <div className="card">
+      <h3 className="text-sm font-medium text-gray-900 mb-4 flex items-center gap-2">
+        🏟️ What this means on court
+      </h3>
+      {onCourt.intro && (
+        <p className="text-sm text-gray-700 leading-relaxed mb-4">{onCourt.intro}</p>
+      )}
+      <div className="space-y-4">
+        {sections.map((s, i) => (
+          <div key={i} className="border-l-2 border-pp-green pl-4">
+            {s.title && <h4 className="text-sm font-semibold text-gray-900 mb-1">{s.title}</h4>}
+            {s.body && <p className="text-sm text-gray-600 leading-relaxed">{s.body}</p>}
+            {s.example && (
+              <p className="text-sm text-gray-500 italic leading-relaxed mt-1">{s.example}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function TrainingPlan({ plan }) {
+  if (!plan) return null
+
+  const priorities = plan.priorities || []
+  const weeklySchedule = plan.weeklySchedule || []
+  const legacyPhases = [
+    { key: 'phase1', title: 'Phase 1 — Weeks 1–3: Build the foundation', color: 'bg-blue-50 text-blue-800' },
+    { key: 'phase2', title: 'Phase 2 — Weeks 4–6: Load and progress',    color: 'bg-pp-greenLite text-pp-green' },
+  ]
+  const hasLegacy = priorities.length === 0 && legacyPhases.some(p => (plan[p.key] || []).length > 0)
+
+  if (priorities.length === 0 && !hasLegacy && weeklySchedule.length === 0) return null
+
+  return (
+    <div className="card">
+      <h3 className="text-sm font-medium text-gray-900 mb-4">🏋️ Training plan</h3>
+      {plan.intro && (
+        <p className="text-sm text-gray-600 leading-relaxed mb-4">{plan.intro}</p>
+      )}
+
+      {priorities.length > 0 && (
+        <div className="space-y-3">
+          {priorities.map((p, i) => (
+            <div key={i} className="border border-gray-100 rounded-xl overflow-hidden">
+              <div
+                className="px-4 py-3 text-sm font-medium text-white"
+                style={{ backgroundColor: p.color || '#1d4ed8' }}
+              >
+                {p.title}
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="bg-gray-50 border-b border-gray-100">
-                      {['Exercise', 'Sets × reps', 'Load', 'Instructions'].map(h => (
-                        <th key={h} className="px-3 py-2.5 text-left font-medium text-gray-500">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {exercises.map((ex, i) => (
-                      <tr key={i} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                        <td className="px-3 py-2.5 font-medium text-gray-800">{ex.name}</td>
-                        <td className="px-3 py-2.5 text-gray-600">{ex.setsReps}</td>
-                        <td className="px-3 py-2.5 text-gray-600">{ex.load}</td>
-                        <td className="px-3 py-2.5 text-gray-600 leading-relaxed">{ex.instructions}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="px-4 py-3 bg-gray-50">
+                {p.note && (
+                  <p className="text-xs text-gray-600 leading-relaxed mb-3">{p.note}</p>
+                )}
+                {p.bullets?.length > 0 && (
+                  <ul className="list-disc list-inside text-xs text-gray-700 space-y-1 mb-3">
+                    {p.bullets.map((b, bi) => <li key={bi}>{b}</li>)}
+                  </ul>
+                )}
+                {p.exercises?.length > 0 && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-xs">
+                      <thead>
+                        <tr className="bg-gray-100 border-b border-gray-200">
+                          {['Exercise', 'Sets', 'Reps', 'Rest', 'Cues'].map(h => (
+                            <th key={h} className="px-3 py-2 text-left font-medium text-gray-500">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {p.exercises.map((ex, ei) => (
+                          <tr key={ei} className={`border-b border-gray-100 ${ei % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                            <td className="px-3 py-2 font-medium text-gray-800">{ex.name}</td>
+                            <td className="px-3 py-2 text-gray-600">{ex.sets}</td>
+                            <td className="px-3 py-2 text-gray-600">{ex.reps}</td>
+                            <td className="px-3 py-2 text-gray-600">{ex.rest}</td>
+                            <td className="px-3 py-2 text-gray-600 leading-relaxed">{ex.cues}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
-          )
-        })}
-      </div>
+          ))}
+        </div>
+      )}
+
+      {hasLegacy && legacyPhases.map(phase => {
+        const exercises = plan[phase.key] || []
+        if (!exercises.length) return null
+        return (
+          <div key={phase.key} className="border border-gray-100 rounded-xl overflow-hidden mt-3">
+            <div className={`px-4 py-3 text-sm font-medium ${phase.color}`}>
+              {phase.title}
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-100">
+                    {['Exercise', 'Sets × reps', 'Load', 'Instructions'].map(h => (
+                      <th key={h} className="px-3 py-2.5 text-left font-medium text-gray-500">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {exercises.map((ex, i) => (
+                    <tr key={i} className={`border-b border-gray-50 ${i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                      <td className="px-3 py-2.5 font-medium text-gray-800">{ex.name}</td>
+                      <td className="px-3 py-2.5 text-gray-600">{ex.setsReps}</td>
+                      <td className="px-3 py-2.5 text-gray-600">{ex.load}</td>
+                      <td className="px-3 py-2.5 text-gray-600 leading-relaxed">{ex.instructions}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )
+      })}
+
+      {weeklySchedule.length > 0 && (
+        <div className="mt-4">
+          <h4 className="text-xs font-medium text-gray-500 mb-2">Weekly schedule</h4>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="bg-gray-800 text-white">
+                  {['Day', 'Focus', 'Exercises'].map(h => (
+                    <th key={h} className="px-3 py-2 text-left font-medium">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {weeklySchedule.map((row, i) => (
+                  <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-3 py-2 font-medium text-gray-800">{row.day}</td>
+                    <td className="px-3 py-2 text-gray-600">{row.focus}</td>
+                    <td className="px-3 py-2 text-gray-600">{row.exercises}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {plan.progression && (
+        <p className="text-xs text-gray-500 leading-relaxed mt-4 italic">{plan.progression}</p>
+      )}
     </div>
   )
 }
